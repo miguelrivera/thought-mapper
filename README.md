@@ -2,14 +2,10 @@
 
 **Visualize your ideas, track evidence, and reveal contradictions as you explore complex goals.**
 
----Add commentMore actions
-
 ## Overview
 
 **ThoughtMapper** is a Svelte 5 application for mapping your thoughts, research, and conversations as you pursue ambitious goals—whether you’re building an organization, investigating a problem, or planning a big project.  
 Easily add new insights from meetings, tag them by source, and connect ideas visually. The app helps you discover gaps in knowledge and highlights contradictions, so you can resolve uncertainty and make informed decisions.
-
----
 
 ## Features
 
@@ -30,8 +26,6 @@ Easily add new insights from meetings, tag them by source, and connect ideas vis
 
 - **Timeline & Evolution:**  
   Optional: Track how your understanding changes over time.
-
----
 
 ## Getting Started
 
