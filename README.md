@@ -27,31 +27,13 @@ Easily add new insights from meetings, tag them by source, and connect ideas vis
 - **Timeline & Evolution:**  
   Optional: Track how your understanding changes over time.
 
-## Getting Started
+## Developing
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/)
 
-### sv
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
-
-#### Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-#### Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+### Running
 ```bash
 npm run dev
 
@@ -59,9 +41,8 @@ npm run dev
 npm run dev -- --open
 ```
 
-#### Building
-
-To create a production version of your app:
+### Building
+To create a production version of the app:
 
 ```bash
 npm run build
@@ -69,14 +50,15 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
 
-### Usage
+
+## Usage
 
 1. **Create a new project:** Start a new “thought map” for your goal or investigation.
 2. **Add nodes:** Capture facts, opinions, questions, or ideas as nodes.
 3. **Link nodes:** Connect related ideas and specify the type of relationship.
 4. **Spot contradictions:** Contradictory links are highlighted for easy review.
+
 
 ## Roadmap
 
@@ -86,11 +68,11 @@ You can preview the production build with `npm run preview`.
 - [ ] Meeting note integration
 - [ ] Timeline/history view
 - [ ] Data import/export
+- [ ] Deployment [adapter](https://svelte.dev/docs/kit/adapters) for target environment
 
 
 ## Tech Stack
-
-- [Svelte 5](https://svelte.dev/)
+- [Svelte 5](https://svelte.dev/) Everything you need to build a Svelte project [`sv`](https://github.com/sveltejs/cli).
 - [vis-network](https://visjs.github.io/vis-network/) or [d3.js](https://d3js.org/) (for graph visualization)
 - [Vite](https://vitejs.dev/) (build tool)
 - LocalStorage (for quick prototyping; can swap for backend later)
