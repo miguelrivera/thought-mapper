@@ -56,5 +56,9 @@
   },
   "dependencies": {
     "daisyui": "^5.0.43"
+  },
+  "overrides": {
+    "cookie": "^0.7.0"
   }
+
 }
