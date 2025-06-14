@@ -1,10 +1,11 @@
 <script lang="ts">
-    import "../style.css";
-    import type { Node, LinkType } from "$lib/types";
+    import { Maybe } from "typescript-functional-extensions";
+    import { Id } from "$lib";
+    import type {Node, LinkType } from "$lib";
     import NodeCard from "$lib/components/NodeCard.svelte";
     import LinkDialog from "$lib/components/LinkDialog.svelte";
-    import { Id } from "$lib/value-types/id";
-    import { Maybe } from "typescript-functional-extensions";
+    
+    import "../style.css";
 
     let nodes: Node[] = [];
     let nodeTitle = "";

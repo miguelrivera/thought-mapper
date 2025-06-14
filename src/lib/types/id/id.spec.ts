@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Id } from "./id";
+import { Id } from "./valueType";
 import { Maybe } from "typescript-functional-extensions";
 
 describe("Id", () => {
