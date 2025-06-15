@@ -1,0 +1,6 @@
+@ThoughtMapper.Orchestrator_HostAddress = http://localhost:5003
+
+GET {{ThoughtMapper.Orchestrator_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
