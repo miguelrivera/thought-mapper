@@ -1,29 +1,20 @@
 <script lang="ts">
   import type { Project, Node } from "$lib";
-  import NodeGraph from "./NodeGraph.svelte";
-  import AddNodeModal from "$lib/components/AddNodeModal.svelte";
-
-  let showAddNode = false;
-  function handleAddNode(node, targetId, linkType) {
-    // Add node to current project and update any links as needed
-  }
 
   export let project: Project;
 
   function getRootNode(): Node | undefined {
-    return project.nodes.find((n) => n.isRoot);
+    return project.nodes.find(n => n.isRoot);
   }
   function getDepth(): number {
     function depth(node: Node, visited: Set<string> = new Set()): number {
       if (visited.has(node.id.idString)) return 0;
       visited.add(node.id.idString);
-      const links = node.links
-        .map((l) =>
-          project.nodes.find((n2) => n2.id.idString === l.to.idString),
-        )
-        .filter(Boolean) as Node[];
+      const links = node.links.map(l =>
+        project.nodes.find(n2 => n2.id.idString === l.to.idString)
+      ).filter(Boolean) as Node[];
       if (!links.length) return 1;
-      return 1 + Math.max(...links.map((n2) => depth(n2, visited)));
+      return 1 + Math.max(...links.map(n2 => depth(n2, visited)));
     }
     const root = getRootNode();
     if (!root) return 0;
@@ -31,16 +22,10 @@
   }
   function getStats() {
     const nodes = project.nodes;
-    const unresolved = nodes.filter(
-      (n) => n.links.length === 0 && !n.isRoot,
-    ).length;
-    const linked = nodes.filter((n) => n.links.length > 0).length;
-    const contradictions = nodes.flatMap((n) =>
-      n.links.filter((l) => l.type === "contradicts"),
-    ).length;
-    const supports = nodes.flatMap((n) =>
-      n.links.filter((l) => l.type === "supports"),
-    ).length;
+    const unresolved = nodes.filter(n => n.links.length === 0 && !n.isRoot).length;
+    const linked = nodes.filter(n => n.links.length > 0).length;
+    const contradictions = nodes.flatMap(n => n.links.filter(l => l.type === "contradicts")).length;
+    const supports = nodes.flatMap(n => n.links.filter(l => l.type === "supports")).length;
     return { unresolved, linked, contradictions, supports };
   }
   function getSuccessProbability() {
@@ -52,6 +37,16 @@
 </script>
 
 <div class="mb-3 text-3xl font-bold">{project.title}</div>
+
+<div class="card card-dash bg-base-200 w-192">
+  <div class="card-body">
+    <h2 class="card-title">Description</h2>
+    <p>The project has no description...</p>
+    <div class="card-actions justify-end">
+      <button class="btn btn-primary">Add description</button>
+    </div>
+  </div>
+</div>
 
 <div class="mb-2 text-2xl font-bold">Stats</div>
 <div class="stats shadow">
@@ -87,29 +82,5 @@
   </div>
 </div>
 
-<div class="grid grid-flow-col grid-rows-1 w-196 gap-5 my-5">
-  <div class="card card-dash bg-base-200">
-    <div class="card-body">
-      <h2 class="card-title">Description</h2>
-      <p>The project has no description...</p>
-      <div class="card-actions justify-end">
-        <button class="btn btn-primary">Add description</button>
-      </div>
-    </div>
-  </div>
 
-  <div class="card card-dash bg-base-200">
-    <div class="card-body">
-      <h2 class="card-title">Need more nodes?</h2>
-      <p>New information may arise...</p>
-      <div class="card-actions justify-end">
-        <button on:click={() => (showAddNode = true)} class="btn btn-primary">Add node</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="my-5">
-  <div class="mb-2 text-2xl font-bold">Graph</div>
-  <NodeGraph {project} />
-</div>
+<!-- Add your root node "cloud" and node cards here! -->

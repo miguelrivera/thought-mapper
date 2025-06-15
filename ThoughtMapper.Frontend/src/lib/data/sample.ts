@@ -1,24 +1,19 @@
-import { LinkType } from "$lib/types/linkType";
 import { Id } from "../types/id/valueType";
 import type { Project } from "../types/project";
-
-const projectId = Id.newId();
-const rootId = Id.newId();
-const psd2Id = Id.newId();
 
 export const sampleProjects: Project[] = [{
     id: Id.newId(),
     title: "Can our bank provide a pan-European payments API?",
     nodes: [
         {
-            id: rootId,
-            title: "Can we?",
+            id: Id.newId(),
+            title: "Can our bank provide a pan-European payments API?",
             content: "Project root: Explore the feasibility, requirements, and challenges.",
-            links: [{to: psd2Id, type: LinkType.relates}],
+            links: [],
             isRoot: true
         },
         {
-            id: psd2Id,
+            id: Id.newId(),
             title: "PSD2 Compliance",
             content: "We must comply with PSD2 regulations across all target countries.",
             links: [],
