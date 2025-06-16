@@ -33,6 +33,7 @@ try
         });
     }
 
+    app.UseCors("SpaCors");
     app.Run();
 }
 catch (Exception ex) when (ex is not HostAbortedException)
