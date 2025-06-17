@@ -1,0 +1,611 @@
+
+openapi: 3.0.3
+info:
+  title: Thought Mapper BFF API
+  version: '1.0'
+  contact:
+    name: Miguel Rivera
+    email: miguel@rivera.se
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: https://thoughtmapper-api{domain}/{version}
+    variables:
+      version:
+        default: v1
+      domain:
+        enum: [ .dev.svc.cluster.local, .stage.svc.cluster.local, .rc.svc.cluster.local, '' ]
+        default: ''
+paths:
+  /projects:
+    get:
+      summary: List projects for the authenticated user
+      tags: [Project]
+      responses:
+        '200':
+          $ref: '#/components/responses/projectListing'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+    post:
+      summary: Create a new project
+      tags: [Project]
+      requestBody:
+        $ref: '#/components/requestBodies/projectCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/projectCreated'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/notAuthorized'          
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+  /projects/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Get a single project by ID
+      tags: [Project]
+      responses:
+        '200':
+          $ref: '#/components/responses/project'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+    patch:
+      summary: Update project
+      tags: [Project]
+      requestBody:
+        $ref: '#/components/requestBodies/projectCreate'
+      responses:
+        '200':
+          $ref: '#/components/responses/projectCreated'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+    delete:
+      summary: Delete project
+      tags: [Project]
+      responses:
+        '204':
+          description: Project deleted
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+  /projects/{id}/nodes:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: List all nodes for a project
+      tags: [Node]
+      responses:
+        '200':
+          $ref: '#/components/responses/nodeListing'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+    post:
+      summary: Add a new node to a project
+      tags: [Node]
+      requestBody:
+        $ref: '#/components/requestBodies/nodeCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/node'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+  /nodes/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Get node details
+      tags: [Node]
+      responses:
+        '200':
+          $ref: '#/components/responses/node'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+    patch:
+      summary: Update node
+      tags: [Node]
+      requestBody:
+        $ref: '#/components/requestBodies/nodeUpdate'
+      responses:
+        '200':
+          $ref: '#/components/responses/node'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+    delete:
+      summary: Delete node
+      tags: [Node]
+      responses:
+        '204':
+          description: Node deleted
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+        
+components:
+  schemas:
+    # value types
+    dateAndTime:
+      nullable: false
+      format: datetime
+      description: General date and time in the ISO 8601 format
+      maxLength: 26
+      type: string
+
+    identity:
+      description: Universally Unique Identifier (uuid v4).
+      example: 203e7108-23c0-4045-9f0f-079baeb2cdbc
+      nullable: false
+      format: uuid
+      maxLength: 36
+      minLength: 32
+      pattern: ^([a-f0-9]{8})-?([a-f0-9]{4})-?([a-f0-9]{4})-?([a-f0-9]{4})-?([a-f0-9]{12})$
+      type: string
+
+    shortString:
+      description: Represents either a name or a bullet-point
+      example: Example Name
+      maxLength: 30
+      nullable: false
+
+    longString:
+      description: Represents a summary or a description
+      example: Trying to understand where I went wrong with my project
+      maxLength: 1024
+      nullable: false
+
+    dataString:
+      description: A Base64 encoded string of an object, file or text of at most 5 MB
+      example: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/ 
+      maxLength: 6990508
+      nullable: false
+      pattern: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+      type: string
+
+    # shared objects
+    content:
+      description: |- 
+        Object representing an entry, or the contents of a `node`. The `data` property is always a Base64 encoded string, 
+        but will be deserialized differently depedending on the `type` and `typeDiscriminator` (if present).
+        Please note that this object is subject to change.
+      required:
+        - data
+        - type
+      type: object
+      properties:
+        type:
+          enum:
+            - file
+            - picture
+            - text-utf-8
+            - text-ascii
+            - text-iso-88591
+          nullable: false
+          type: string
+        typeDiscriminator: 
+          enum:
+            - binary
+            - docx
+            - doc
+            - pdf
+            - none
+          default: none
+          nullable: true
+          type: string
+        data:
+          $ref: '#/components/schemas/dataString'
+      example:
+        data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        type: text
+
+    entity:
+      description: 'An object with the fields added when it has been persisted '
+      required:
+        - created
+        - id
+        - updated
+      type: object
+      properties:
+        created:
+          $ref: '#/components/schemas/dateAndTime'
+        hasChildren:
+          type: boolean
+        id:
+          $ref: '#/components/schemas/identity'
+        updated:
+          $ref: '#/components/schemas/dateAndTime'
+
+    # domain object, or DTOs
+    project:
+      description: General representation of a project in the ThoughtMapper domain
+      required:
+        - title
+        - name
+        - root
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/shortString'
+        root:
+          $ref: '#/components/schemas/content'
+        title:
+          $ref: '#/components/schemas/longString'
+      example:
+        title: Payment API possibility
+        shortName: payment-api
+        root:
+          type: raw
+          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+
+    projectPartial:
+      description: General representation of a project's properties to be updated, the `root` property is not optional
+      type: object
+      required:
+        - root
+      properties:
+        name:
+          $ref: '#/components/schemas/shortString'
+        root:
+          $ref: '#/components/schemas/content'
+        title:
+          $ref: '#/components/schemas/longString'
+      example:
+        root:
+          type: raw
+          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+
+    projectEntity:
+      allOf:
+        - $ref: '#/components/schemas/project'
+        - $ref: '#/components/schemas/entity'
+      example:
+        id: 44f145af-b539-4e1e-b69c-517594ec1d7d
+        title: Payment API possibility
+        shortName: payment-api
+        root:
+          type: raw
+          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        hasChildren: 'true'
+        created: '2025-06-01T10:43:11.193Z'
+        updated: '2025-06-10T16:26:49.537Z'
+
+    node:
+      description: General representation of a child node attached to a project
+      required:
+        - projectId
+        - title
+        - content
+      type: object
+      properties:
+        projectId:
+          $ref: '#/components/schemas/identity'
+        content:
+          $ref: '#/components/schemas/content'
+      example:
+        projectId: 203e7108-23c0-4045-9f0f-079baeb2cdbc
+        content:
+          type: raw
+          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+
+    nodePartial:
+      description: General representation of a node to update
+      required:
+        - projectId
+      type: object
+      properties:
+        projectId:
+          $ref: '#/components/schemas/identity'
+        content:
+          $ref: '#/components/schemas/content'
+      example:
+        projectId: 203e7108-23c0-4045-9f0f-079baeb2cdbc
+        content:
+          type: raw
+          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+
+    nodeEntity:
+      allOf:
+        - $ref: '#/components/schemas/node'
+        - $ref: '#/components/schemas/entity'
+      example:
+        content:
+          type: raw
+          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        created: '2025-06-01T10:43:11.193Z'
+        hasChildren: 'true'
+        id: 44f145af-b539-4e1e-b69c-517594ec1d7d
+        projectId: 203e7108-23c0-4045-9f0f-079baeb2cdbc
+        updated: '2025-06-10T16:26:49.537Z'
+
+    problemDetails:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          description: URI reference to human-readable documentation for the problem type.
+          example: "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+          example: "Not Found"
+        status:
+          type: integer
+          description: HTTP status code generated by the origin server.
+          example: 404
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem.
+          example: "The requested project was not found."
+        instance:
+          type: string
+          description: URI reference that identifies the specific occurrence of the problem.
+          example: "/projects/123"
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Validation errors, if any.
+          example: {"projectName": ["Must not be empty."]}
+        
+  requestBodies: 
+    projectCreate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/project'
+      description: Payload to create a project
+
+    projectUpdate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/projectPartial'
+      description: Payload to update a project
+
+    nodeCreate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/node'
+      description: Payload to create a node
+
+    nodeUpdate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/nodePartial'
+      description: Payload to update a node
+
+  responses:
+    badRequest:
+      description: Problem details as per RFC 7807 for status 400
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/problemDetails'
+          example:
+              type: "https://thoughmapper-api/errors/400"
+              status: 400
+              title: Bad request
+              detail: The payload provided with the request is not valid
+              instance: /resource
+              errors:
+                data: 
+                  - root: object missing
+  
+    notAuthorized:
+      description: Problem details as per RFC 7807 for status 401
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/problemDetails'
+          example:
+              type: "https://thoughmapper-api/errors/401"
+              status: 401
+              title: Unauthorized
+              detail: You are not authorized to the resource `Resource`
+              instance: /resource
+              errors:
+                user: 
+                  - sid: 2398042 
+                    token: 4378ef63-815c-4925-a08c-7346a69800ef 
+                    message: token lacks scope thoughmapper.api
+    forbidden:
+      description: Problem details as per RFC 7807 for status 403
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/problemDetails'
+          example:
+              type: "https://thoughmapper-api/errors/403"
+              status: 403
+              title: Forbidden
+              detail: Action not allowed
+              instance: /resource/6228adaf-02d2-419d-b875-648572d17a67
+              errors:
+                user: 
+                  - sid: 2398042 
+                    token: 4378ef63-815c-4925-a08c-7346a69800ef 
+                    message: user does not own `6228adaf-02d2-419d-b875-648572d17a67` 
+                
+    notFound:
+      description: Problem details as per RFC 7807 for status 404
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/problemDetails'
+          example:
+              type: "https://thoughmapper-api/errors/404"
+              status: 404
+              title: Not Found
+              detail: The requested resource does not exist
+              instance: /resource/6228adaf-02d2-419d-b875-648572d17a67
+              errors:
+                data: 
+                  - message: Resource `resource` with id `6228adaf-02d2-419d-b875-648572d17a67` does not exist
+
+    serverError:
+      description: Problem details as per RFC 7807 for status 500
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/problemDetails'
+          example:
+              type: "https://thoughmapper-api/errors/500"
+              status: 500
+              title: Internal Server Error
+              detail: The server failed to process your request
+              instance: /resource/6228adaf-02d2-419d-b875-648572d17a67
+
+    projectCreated: 
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/projectEntity'
+      description: Project was created successfully
+
+    projectListing:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/projectEntity'
+      description: A successfull response when calling the GET endpoint for the projects resource
+
+    project: 
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/projectEntity'
+      description: Project found and is valid
+
+    nodeCreated: 
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/nodeEntity'
+      description: Node was created successfully
+
+    node: 
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/nodeEntity'
+      description: Node found and is valid
+
+    nodeListing:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/nodeEntity'
+      description: A collection of valid nodes
+
+  parameters:
+    id: 
+      in: path
+      name: id
+      schema:
+        $ref: '#/components/schemas/identity'
+      required: true
+
+  securitySchemes:
+    OpenIDAuth:
+      type: openIdConnect
+      openIdConnectUrl: https://thoughtmapper-auth/.well-known/openid-configuration
+
+security:
+  - OpenIDAuth: []
+
+tags:
+  - name: Project
+  - name: Node
