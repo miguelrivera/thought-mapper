@@ -1,0 +1,66 @@
+{
+    "runtime": "Net90",
+    "defaultVariables": null,
+    "documentGenerator": {
+        "fromDocument": {
+            "url": "tought-mapper-bff-v1.yaml",
+            "output": null
+        }
+    },
+    "codeGenerators": {
+      "openApiToCSharpController": {
+        "controllerBaseClass": null,
+        "controllerStyle": "Partial",
+        "controllerTarget": "AspNetCore",
+        "useCancellationToken": true,
+        "useActionResultType": false,
+        "generateModelValidationAttributes": false,
+        "routeNamingStrategy": "None",
+        "basePath": null,
+        "className": "{controller}",
+        "operationGenerationMode": "MultipleClientsFromOperationId",
+        "additionalNamespaceUsages": [
+        ],
+        "additionalContractNamespaceUsages": [
+        ],
+        "generateOptionalParameters": false,
+        "generateJsonMethods": false,
+        "enforceFlagEnums": false,
+        "parameterArrayType": "System.Collections.Generic.IEnumerable",
+        "parameterDictionaryType": "System.Collections.Generic.IDictionary",
+        "responseArrayType": "System.Collections.Generic.ICollection",
+        "responseDictionaryType": "System.Collections.Generic.IDictionary",
+        "wrapResponses": false,
+        "wrapResponseMethods": [
+        ],
+        "generateResponseClasses": true,
+        "responseClass": "SwaggerResponse",
+        "namespace": "ThoughtMapper.Orchestrator",
+        "requiredPropertiesMustBeDefined": true,
+        "jsonLibrary": "systemTextJson",
+        "jsonPolymorphicSerializationStyle": "systemTextJson",
+        "generateDefaultValues": true,
+        "generateDataAnnotations": true,
+        "excludedTypeNames": [
+        ],
+        "excludedParameterNames": [
+        ],
+        "handleReferences": false,
+        "generateImmutableArrayProperties": false,
+        "generateImmutableDictionaryProperties": false,
+        "jsonSerializerSettingsTransformationMethod": null,
+        "inlineNamedArrays": false,
+        "inlineNamedDictionaries": false,
+        "inlineNamedTuples": true,
+        "inlineNamedAny": false,
+        "generateDtoTypes": true,
+        "generateOptionalPropertiesAsNullable": false,
+        "generateNullableReferenceTypes": false,
+        "templateDirectory": null,
+        "serviceHost": null,
+        "serviceSchemes": null,
+        "output": "../ThoughtMapper.Orchestrator/ApiControllers.g.cs",
+        "newLineBehavior": "Auto"
+      }
+    }
+}

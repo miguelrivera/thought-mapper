@@ -1,4 +1,3 @@
-
 openapi: 3.0.3
 info:
   title: Thought Mapper BFF API
@@ -198,12 +197,32 @@ paths:
       security:
         - OpenIDAuth: ["thoughtmapper.api"]
         
+  /nodes/{id}/links:        
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: List all nodes for a project
+      tags: [Node]
+      responses:
+        '200':
+          $ref: '#/components/responses/nodeLinks'
+        '401':
+          $ref: '#/components/responses/notAuthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/serverError'
+      security:
+        - OpenIDAuth: ["thoughtmapper.api"]
+
 components:
   schemas:
     # value types
     dateAndTime:
       nullable: false
-      format: datetime
+      format: date-time
       description: General date and time in the ISO 8601 format
       maxLength: 26
       type: string
@@ -218,63 +237,52 @@ components:
       pattern: ^([a-f0-9]{8})-?([a-f0-9]{4})-?([a-f0-9]{4})-?([a-f0-9]{4})-?([a-f0-9]{12})$
       type: string
 
-    shortString:
-      description: Represents either a name or a bullet-point
-      example: Example Name
-      maxLength: 30
-      nullable: false
-
-    longString:
-      description: Represents a summary or a description
-      example: Trying to understand where I went wrong with my project
-      maxLength: 1024
-      nullable: false
-
-    dataString:
-      description: A Base64 encoded string of an object, file or text of at most 5 MB
+    payload: 
+      description: A Base64 encoded string of an object, file, or text of at most 5 MB
       example: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/ 
       maxLength: 6990508
       nullable: false
       pattern: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
       type: string
+      
+    shortString: 
+      description: Represents either a name or a bullet-point
+      example: Example Name
+      maxLength: 30
+      nullable: false
+      type: string
 
-    # shared objects
-    content:
-      description: |- 
-        Object representing an entry, or the contents of a `node`. The `data` property is always a Base64 encoded string, 
-        but will be deserialized differently depedending on the `type` and `typeDiscriminator` (if present).
-        Please note that this object is subject to change.
-      required:
-        - data
-        - type
-      type: object
-      properties:
-        type:
-          enum:
-            - file
-            - picture
-            - text-utf-8
-            - text-ascii
-            - text-iso-88591
-          nullable: false
-          type: string
-        typeDiscriminator: 
-          enum:
-            - binary
-            - docx
-            - doc
-            - pdf
-            - none
-          default: none
-          nullable: true
-          type: string
-        data:
-          $ref: '#/components/schemas/dataString'
-      example:
-        data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
-        type: text
-
+    longString: 
+      description: Represents a summary or a description
+      example: Trying to understand where I went wrong with my project
+      maxLength: 1024
+      nullable: false
+      type: string
+    
+    payloadType:
+      enum:
+        - file
+        - picture
+        - text-utf-8
+        - text-ascii
+        - text-iso-88591
+      nullable: false
+      type: string
+      default: text-utf-8
+      
+    payloadDiscriminator: 
+      enum:
+        - binary
+        - docx
+        - doc
+        - pdf
+        - none
+      default: none
+      nullable: true
+      type: string
+      
     entity:
+      additionalProperties: false
       description: 'An object with the fields added when it has been persisted '
       required:
         - created
@@ -293,44 +301,54 @@ components:
 
     # domain object, or DTOs
     project:
+      additionalProperties: false
       description: General representation of a project in the ThoughtMapper domain
       required:
         - title
-        - name
-        - root
+        - shortName
+        - payload
+        - payloadType
       type: object
       properties:
-        name:
+        shortName:
           $ref: '#/components/schemas/shortString'
-        root:
-          $ref: '#/components/schemas/content'
+        payload:
+          $ref: '#/components/schemas/payload'
+        payloadType:
+          $ref: '#/components/schemas/payloadType'
+        payloadDiscriminator:
+          $ref: '#/components/schemas/payloadDiscriminator'          
         title:
           $ref: '#/components/schemas/longString'
       example:
         title: Payment API possibility
         shortName: payment-api
-        root:
-          type: raw
-          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        payloadType: text-utf-8
+        payload: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
 
     projectPartial:
+      additionalProperties: false
       description: General representation of a project's properties to be updated, the `root` property is not optional
       type: object
       required:
         - root
       properties:
-        name:
+        shortName:
           $ref: '#/components/schemas/shortString'
-        root:
-          $ref: '#/components/schemas/content'
+        payload:
+          $ref: '#/components/schemas/payload'
+        payloadType:
+          $ref: '#/components/schemas/payloadType'
+        payloadDiscriminator:
+          $ref: '#/components/schemas/payloadDiscriminator'          
         title:
           $ref: '#/components/schemas/longString'
       example:
-        root:
-          type: raw
-          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        payloadType: text-utf-8
+        paload: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
 
     projectEntity:
+      additionalProperties: false
       allOf:
         - $ref: '#/components/schemas/project'
         - $ref: '#/components/schemas/entity'
@@ -338,55 +356,95 @@ components:
         id: 44f145af-b539-4e1e-b69c-517594ec1d7d
         title: Payment API possibility
         shortName: payment-api
-        root:
-          type: raw
-          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        payloadType: text-utf-8
+        paload: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
         hasChildren: 'true'
-        created: '2025-06-01T10:43:11.193Z'
-        updated: '2025-06-10T16:26:49.537Z'
+        created: '2025-06-01 10:43:11.193'
+        updated: '2025-06-10 16:26:49.537'
+
+    nodeLink:
+      additionalProperties: false
+      type: object
+      required:
+        - from 
+        - to
+        - type
+      properties:
+        from:
+          $ref: '#/components/schemas/identity'
+          description: The node ID this link points from
+        to:
+          $ref: '#/components/schemas/identity'
+          description: The node ID this link points to
+        type:
+          type: string
+          enum: [supports, contradicts, relates]
+          description: The nature of the relationship/link
+      example:
+        to: b22aeb4d-1fbe-4d1e-97b7-58cc74efecdc
+        type: supports
 
     node:
+      additionalProperties: false
       description: General representation of a child node attached to a project
       required:
         - projectId
         - title
-        - content
+        - payload
+        - payloadType
       type: object
       properties:
         projectId:
           $ref: '#/components/schemas/identity'
-        content:
-          $ref: '#/components/schemas/content'
+        payload:
+          $ref: '#/components/schemas/payload'
+        payloadType:
+          $ref: '#/components/schemas/payloadType'
+        payloadDiscriminator:
+          $ref: '#/components/schemas/payloadDiscriminator'
       example:
         projectId: 203e7108-23c0-4045-9f0f-079baeb2cdbc
-        content:
-          type: raw
-          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        payloadType: text-utf-8
+        payload: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
 
     nodePartial:
+      additionalProperties: false
       description: General representation of a node to update
       required:
         - projectId
+        - payloadType
+        - payload
       type: object
       properties:
         projectId:
           $ref: '#/components/schemas/identity'
-        content:
-          $ref: '#/components/schemas/content'
+        payload:
+          $ref: '#/components/schemas/payload'
+        payloadType:
+          $ref: '#/components/schemas/payloadType'
+        payloadDiscriminator:
+          $ref: '#/components/schemas/payloadDiscriminator'
       example:
         projectId: 203e7108-23c0-4045-9f0f-079baeb2cdbc
-        content:
-          type: raw
-          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        payloadType: text-utf-8
+        payload: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
 
     nodeEntity:
+      additionalProperties: false
+      required:
+        - projectId
+        - title
+        - payload
+        - payloadType
+        - created
+        - id
+        - updated
       allOf:
         - $ref: '#/components/schemas/node'
         - $ref: '#/components/schemas/entity'
       example:
-        content:
-          type: raw
-          data: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
+        payloadType: text-utf-8
+        payload: SXMgaXQgcG9zc2libGUgdG8gY3JlYXRlIGFuIEFQSSB3aXRob3V0IGFuIGlkZWE/
         created: '2025-06-01T10:43:11.193Z'
         hasChildren: 'true'
         id: 44f145af-b539-4e1e-b69c-517594ec1d7d
@@ -394,6 +452,7 @@ components:
         updated: '2025-06-10T16:26:49.537Z'
 
     problemDetails:
+      additionalProperties: false
       type: object
       required:
         - type
@@ -465,7 +524,7 @@ components:
 
   responses:
     badRequest:
-      description: Problem details as per RFC 7807 for status 400
+      description: Bad request
       content:
         application/problem+json:
           schema:
@@ -481,7 +540,7 @@ components:
                   - root: object missing
   
     notAuthorized:
-      description: Problem details as per RFC 7807 for status 401
+      description: Unauthorized
       content:
         application/problem+json:
           schema:
@@ -498,7 +557,7 @@ components:
                     token: 4378ef63-815c-4925-a08c-7346a69800ef 
                     message: token lacks scope thoughmapper.api
     forbidden:
-      description: Problem details as per RFC 7807 for status 403
+      description: Forbidden
       content:
         application/problem+json:
           schema:
@@ -516,7 +575,7 @@ components:
                     message: user does not own `6228adaf-02d2-419d-b875-648572d17a67` 
                 
     notFound:
-      description: Problem details as per RFC 7807 for status 404
+      description: Not found
       content:
         application/problem+json:
           schema:
@@ -532,7 +591,7 @@ components:
                   - message: Resource `resource` with id `6228adaf-02d2-419d-b875-648572d17a67` does not exist
 
     serverError:
-      description: Problem details as per RFC 7807 for status 500
+      description: Internal Server Error
       content:
         application/problem+json:
           schema:
@@ -590,6 +649,14 @@ components:
               $ref: '#/components/schemas/nodeEntity'
       description: A collection of valid nodes
 
+    nodeLinks: 
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/nodeLink'
+    
   parameters:
     id: 
       in: path
