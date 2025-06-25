@@ -25,6 +25,17 @@ internal static class HostingExtensions
         isBuilder.AddInMemoryApiScopes(Config.ApiScopes);
         isBuilder.AddInMemoryClients(Config.Clients);
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("SpaCors", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
+
 
         // if you want to use server-side sessions: https://blog.duendesoftware.com/posts/20220406_session_management/
         // then enable it
@@ -43,12 +54,8 @@ internal static class HostingExtensions
             .AddGoogle(options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                // register your IdentityServer with Google at https://console.developers.google.com
-                // enable the Google+ API
-                // set the redirect URI to https://localhost:5001/signin-google
-                options.ClientId = "copy client ID from Google here";
-                options.ClientSecret = "copy client secret from Google here";
+                options.ClientId = "34801301905-utvhrfb9egr3h9hfcmjtrlto4vcvmnru.apps.googleusercontent.com";
+                options.ClientSecret = "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";
             });
 
         return builder.Build();
@@ -67,7 +74,7 @@ internal static class HostingExtensions
         app.UseRouting();
         app.UseIdentityServer();
         app.UseAuthorization();
-
+        app.UseCors("SpaCors");
         app.MapRazorPages()
             .RequireAuthorization();
 
