@@ -48,31 +48,39 @@
     - Connects to local LLMs (Phi-3, Llama 3, etc.) via [Ollama](https://ollama.com/) or similar.
 - **AI Layer:** Open-source LLM, running locally via API. Pluggable, OpenAI-compatible.
 
-## Roadmap & Phases
 
-### **Phase 1: Foundations**
+### Project Roadmap
+
+#### Phase 1: Foundations
 - [x] Visual node graph with links and contradiction detection
 - [x] Multiple projects per user
 - [x] Dashboard with metrics (depth, unresolved, contradictions, etc.)
 - [x] Add node via modal/dialog
 - [x] Node/link editing and deletion
 
-### **Phase 2: User & Context Management**
-- [ ] User registration/login (with C# API backend)
-- [ ] Per-user context in orchestrator
-- [ ] Projects and nodes associated with users and sessions
+#### Phase 2: User & Context Management
+- [ ] User registration/login (with IdentityServer/OIDC backend)
+- [ ] Per-user context and secure session management in orchestrator
+- [ ] Projects and nodes strictly associated with authenticated users/sessions
 
-### **Phase 3: AI Integration**
-- [ ] C# middleware for AI orchestration (prompt/response, project "memory")
-- [ ] Local LLM integration (Phi-3, Llama 3, etc. via Ollama)
-- [ ] AI-driven: initial solution suggestion, follow-up questions, sub-nodes
-- [ ] "Personalized" AI-remembers your past questions, adapts suggestions
+#### Phase 3: AI Integration (via gRPC)
+- [ ] C# middleware for AI orchestration (prompt/response, project “memory”)
+- [ ] **gRPC-based LLM integration** (e.g., Phi-3, Llama 3, or other, *not* REST)
+- [ ] AI-driven: initial solution suggestion, follow-up questions, sub-nodes (via gRPC)
+- [ ] “Personalized” AI—remembers your past questions and adapts suggestions (context via orchestrator)
 
-### **Phase 4: Usability & Power**
-- [ ] Advanced search and filter
-- [ ] Export/import (JSON/CSV)
-- [ ] Collaboration features (share maps, comments)
-- [ ] Deployment adapters and cloud/local install
+#### Phase 4: Usability & Power
+- [ ] Advanced search and filter (across nodes/projects)
+- [ ] Import/export features (JSON/CSV)
+- [ ] Collaboration features (share maps, team comments)
+- [ ] Deployment adapters and cloud/local install (Docker, etc.)
+- [ ] Polished error handling (surface ProblemDetails in SPA)
+- [ ] End-to-end testing and improved documentation
+
+**Notes:**
+- **AI integration will use gRPC** (not REST), for performance and extensibility.
+- All APIs and UIs are built with security and multi-user support as a baseline (OIDC/JWT, scopes, claims).
+- The roadmap is iterative—phases can overlap, and AI can be “stubbed” early for rapid learning and experimentation.
 
 ## Developing
 
@@ -80,7 +88,7 @@
 - [Node.js](https://nodejs.org/)
 - [Ollama](https://ollama.com/) (for local AI, optional but recommended)
 - [Docker](https://www.docker.com/) or [OCI-compatible container runtime](https://opencontainers.org/) (for running local LLMs or backend services)
-- [.NET 9+](https://dotnet.microsoft.com/) (for backend orchestrator, planned)
+- [dotnet 9+](https://dotnet.microsoft.com/) (for backend orchestrator, planned)
 
 ### Running
 
